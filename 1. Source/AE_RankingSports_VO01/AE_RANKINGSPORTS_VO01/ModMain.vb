@@ -82,6 +82,13 @@
             ExecuteSQLQuery_DT(P_sConString, sQuery, sErrDesc)
             Console.WriteLine("Completed Successfully ", sFuncName)
 
+            Console.WriteLine("Executing CustomerGroup Sync", sFuncName)
+            sQuery = "[AE_SP008_CustomerGroupSync]'[" & p_oCompDef.p_sDataBaseName & "]'"
+            If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("CustomerGroup Query : " & sQuery, sFuncName)
+            If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Calling ExecuteSQLQuery_DT()", sFuncName)
+            ExecuteSQLQuery_DT(P_sConString, sQuery, sErrDesc)
+            Console.WriteLine("Completed Successfully ", sFuncName)
+
 
             Console.WriteLine("Stock Checking Query :", sFuncName)
             sQuery = "[AE_SP002_GetNoStockItem]'[" & p_oCompDef.p_sDataBaseName & "]'"

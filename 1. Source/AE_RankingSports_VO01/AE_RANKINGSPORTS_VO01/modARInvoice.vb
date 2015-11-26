@@ -32,6 +32,7 @@
         Dim dPostxdatetime As Date
         Dim oDT_Payamount As DataTable = New DataTable
         Dim dPayamount As Double = 0
+        Dim dHDocTotal As Double = 0
         oDT_Payamount = oDVPayment.ToTable
 
         If oDT_Payamount.Rows.Count > 0 Then
@@ -79,14 +80,16 @@
                 '' MsgBox(dvr("DPrice").ToString.Trim)
                 '' oARInvoice.Lines.Price = CDbl(dvr("DPrice").ToString.Trim)
                 oARInvoice.Lines.LineTotal = CDbl(dvr("DLineTotal").ToString.Trim)
+
                 oARInvoice.Lines.WarehouseCode = sWhsCode
                 oARInvoice.Lines.VatGroup = dvr("VatGourpSa").ToString.Trim
                 oARInvoice.Lines.Add()
             Next
 
-            If dPayamount > 0 Then
-                oARInvoice.DocTotal = dPayamount
-            End If
+            ''If dPayamount > 0 Then
+            ''    oARInvoice.DocTotal = dPayamount
+            ''End If
+            oARInvoice.DocTotal = oDVARInvoice.Item(0).Row("HDocTotal").ToString.Trim
 
             If oCompany.InTransaction = False Then oCompany.StartTransaction()
             If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Attempting to Add Draft ", sFuncName)
@@ -399,7 +402,7 @@
             If lRetCode <> 0 Then
                 sErrDesc = oCompany.GetLastErrorDescription
                 Call WriteToLogFile(sErrDesc, sFuncName)
-                oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HTransID").ToString.Trim, "", "FAIL", sErrDesc, "", Now.ToShortTimeString)
+                oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HPOSTxNo").ToString.Trim, "", "FAIL", sErrDesc, "", Now.ToShortTimeString)
                 If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Calling Update_Status() ", sFuncName)
                 ''System.Runtime.InteropServices.Marshal.ReleaseComObject(oARInvoice)
                 Return RTN_ERROR
@@ -419,7 +422,7 @@
 
                         Call WriteToLogFile(sErrDesc, sFuncName)
                         If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Completed with ERROR", sFuncName)
-                        oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HTransID").ToString.Trim, "", "FAIL", sErrDesc, "", Now.ToShortTimeString)
+                        oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HPOSTxNo").ToString.Trim, "", "FAIL", sErrDesc, "", Now.ToShortTimeString)
                         If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Rollback the SAP Transaction ", sFuncName)
                         If oCompany.InTransaction = True Then oCompany.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_RollBack)
                         oARInvoice = Nothing
@@ -435,7 +438,7 @@
 
                         Call WriteToLogFile(sErrDesc, sFuncName)
                         If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Completed with ERROR", sFuncName)
-                        oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HTransID").ToString.Trim, "", "FAIL", sErrDesc, "", Now.ToShortTimeString)
+                        oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HPOSTxNo").ToString.Trim, "", "FAIL", sErrDesc, "", Now.ToShortTimeString)
                         If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Rollback the SAP Transaction ", sFuncName)
                         If oCompany.InTransaction = True Then oCompany.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_RollBack)
                         oARInvoice = Nothing
@@ -449,7 +452,7 @@
                 sErrDesc = ""
 
                 ''  Update_Status(sTransID, sErrDesc, "SUCCESS", sDocEntry, "SalesTransHDR")
-                oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HTransID").ToString.Trim, "", "SUCCESS", "", "", Now.ToShortTimeString)
+                oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HPOSTxNo").ToString.Trim, "", "SUCCESS", "", "", Now.ToShortTimeString)
                 If oCompany.InTransaction = True Then oCompany.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_Commit)
                 If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Committed the Transaction Reference POSNumber : " & sPOSNumber, sFuncName)
                 ''System.Runtime.InteropServices.Marshal.ReleaseComObject(oARInvoice)

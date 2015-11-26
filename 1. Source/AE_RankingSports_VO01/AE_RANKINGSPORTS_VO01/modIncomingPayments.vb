@@ -111,6 +111,7 @@
                     AR_IncomingPayment_Cancel = RTN_ERROR
                 Else
                     Console.WriteLine("Completed with SUCCESS " & oIncomingPayment.DocNum, sFuncName)
+                    sErrDesc = String.Empty
                     If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Completed with SUCCESS.", sFuncName)
                     AR_IncomingPayment_Cancel = RTN_SUCCESS
 

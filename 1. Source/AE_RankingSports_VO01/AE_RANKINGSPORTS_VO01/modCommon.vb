@@ -122,18 +122,19 @@ Module modCommon
 
             oDV_InvoiceInform = New DataView(oDT_Invoice)
             oDV_PaymentsInform = New DataView(oDT_Payments)
-            oDT_Distinct = oDV_InvoiceInform.Table.DefaultView.ToTable(True, "HTransID")
-
+            ' oDT_Distinct = oDV_InvoiceInform.Table.DefaultView.ToTable(True, "HTransID")
+            oDT_Distinct = oDV_InvoiceInform.Table.DefaultView.ToTable(True, "HPOSTxNo")
             For imjs As Integer = 0 To oDT_Distinct.Rows.Count - 1
 
                 ''''''''''--------------------------------------
                 '''''----------  Payment Code Validation
                 ''''' -------------------------------------------
 
-                Console.WriteLine("Calling Function AR_InvoiceCreation() TransID " & oDT_Distinct.Rows(imjs).Item("HTransID"), sFuncName)
-                If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Calling Function AR_InvoiceCreation() TransID " & oDT_Distinct.Rows(imjs).Item("HTransID"), sFuncName)
+                Console.WriteLine("Calling Function AR_InvoiceCreation() POSTxNo " & oDT_Distinct.Rows(imjs).Item("HPOSTxNo"), sFuncName)
+                If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Calling Function AR_InvoiceCreation() TransID " & oDT_Distinct.Rows(imjs).Item("HPOSTxNo"), sFuncName)
 
-                oDV_PaymentsInform.RowFilter = "HeaderID = '" & oDT_Distinct.Rows(imjs).Item("HTransID") & "'"
+                ' oDV_PaymentsInform.RowFilter = "HeaderID = '" & oDT_Distinct.Rows(imjs).Item("HTransID") & "'"
+                oDV_PaymentsInform.RowFilter = "POSTxNo = '" & oDT_Distinct.Rows(imjs).Item("HPOSTxNo") & "'"
                 If oDV_PaymentsInform.Count > 0 Then
                     If CInt(oDV_PaymentsInform.Item(0).Row("CreditCardCount").ToString.Trim) > 0 Then
                         For Each drv In oDV_PaymentsInform
@@ -141,11 +142,11 @@ Module modCommon
                                 sErrDisplay = sErrDisplay & " " & drv("ErrMsg").ToString.Trim
                             End If
                         Next
-                        oDT_InvoiceStatus.Rows.Add(oDV_PaymentsInform.Item(0).Row("HeaderID").ToString.Trim, _
+                        oDT_InvoiceStatus.Rows.Add(oDV_PaymentsInform.Item(0).Row("POSTxNo").ToString.Trim, _
                                                                                                     "", "FAIL", _
                                                                          sErrDisplay, "", Now.ToShortTimeString, "", "")
-                        Console.WriteLine("Validation Fails TransID " & oDT_Distinct.Rows(imjs).Item("HTransID"), sFuncName)
-                        If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Validation Fails TransID " & oDT_Distinct.Rows(imjs).Item("HTransID"), sFuncName)
+                        Console.WriteLine("Validation Fails POSTxNo " & oDT_Distinct.Rows(imjs).Item("HPOSTxNo"), sFuncName)
+                        If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Validation Fails POSTxNo " & oDT_Distinct.Rows(imjs).Item("HPOSTxNo"), sFuncName)
                     Else
 
                         ''''''''''--------------------------------------
@@ -153,25 +154,25 @@ Module modCommon
                         ''''' -------------------------------------------
 
 
-                        oDV_InvoiceInform.RowFilter = "HTransID ='" & oDT_Distinct.Rows(imjs).Item("HTransID") & "' and Validation2Count = 0"
+                        oDV_InvoiceInform.RowFilter = "HPOSTxNo ='" & oDT_Distinct.Rows(imjs).Item("HPOSTxNo") & "' and Validation2Count = 0"
 
                         If oDV_InvoiceInform.Count = 0 Then
-                            oDV_InvoiceInform.RowFilter = "HTransID ='" & oDT_Distinct.Rows(imjs).Item("HTransID") & "'"
+                            oDV_InvoiceInform.RowFilter = "HPOSTxNo ='" & oDT_Distinct.Rows(imjs).Item("HPOSTxNo") & "'"
                             For Each drv As DataRowView In oDV_InvoiceInform
-                                oDT_InvoiceStatus.Rows.Add(drv("HTransID").ToString.Trim, drv("DItemCode").ToString.Trim, "FAIL", _
+                                oDT_InvoiceStatus.Rows.Add(drv("HPOSTxNo").ToString.Trim, drv("DItemCode").ToString.Trim, "FAIL", _
                                                            "Validation Fails Pls find the line level error msg", drv("DetailsErrMsg").ToString.Trim, Now.ToShortTimeString, "", "")
                             Next
-                            Console.WriteLine("Validation Fails TransID " & oDT_Distinct.Rows(imjs).Item("HTransID"), sFuncName)
-                            If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Validation Fails TransID " & oDT_Distinct.Rows(imjs).Item("HTransID"), sFuncName)
+                            Console.WriteLine("Validation Fails POSTxNo " & oDT_Distinct.Rows(imjs).Item("HPOSTxNo"), sFuncName)
+                            If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Validation Fails POSTxNo " & oDT_Distinct.Rows(imjs).Item("HPOSTxNo"), sFuncName)
                         Else
                             ''''''''''--------------------------------------
                             '''''----------   Validation Succeed
                             ''''' -------------------------------------------
 
                             '' AR_InvoiceCreation 
-                            ''  Console.WriteLine("Calling Function AR_InvoiceCreation() TransID " & oDT_Distinct.Rows(imjs).Item("HTransID"), sFuncName)
-                            Console.WriteLine("Validation SUCCESS TransID " & oDT_Distinct.Rows(imjs).Item("HTransID"), sFuncName)
-                            If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Validation SUCCESS TransID " & oDT_Distinct.Rows(imjs).Item("HTransID"), sFuncName)
+                            ''  Console.WriteLine("Calling Function AR_InvoiceCreation() TransID " & oDT_Distinct.Rows(imjs).Item("HPOSTxNo"), sFuncName)
+                            Console.WriteLine("Validation SUCCESS POSTxNo " & oDT_Distinct.Rows(imjs).Item("HPOSTxNo"), sFuncName)
+                            If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Validation SUCCESS POSTxNo " & oDT_Distinct.Rows(imjs).Item("HPOSTxNo"), sFuncName)
                             oDT_InvoiceStatus.Clear()
                             MarketingDocuments_Sync(oDV_InvoiceInform, oDV_PaymentsInform, p_oCompany, oDT_InvoiceStatus, sErrDesc)
                         End If
@@ -218,26 +219,26 @@ Module modCommon
                    
                 Else
 
-                    oDV_InvoiceInform.RowFilter = "HTransID ='" & oDT_Distinct.Rows(imjs).Item("HTransID") & "' and Validation2Count = 0 "
+                    oDV_InvoiceInform.RowFilter = "HPOSTxNo ='" & oDT_Distinct.Rows(imjs).Item("HPOSTxNo") & "' and Validation2Count = 0 "
 
                     If oDV_InvoiceInform.Count = 0 Then
-                        oDV_InvoiceInform.RowFilter = "HTransID ='" & oDT_Distinct.Rows(imjs).Item("HTransID") & "'"
+                        oDV_InvoiceInform.RowFilter = "HPOSTxNo ='" & oDT_Distinct.Rows(imjs).Item("HPOSTxNo") & "'"
                         For Each drv As DataRowView In oDV_InvoiceInform
-                            oDT_InvoiceStatus.Rows.Add(drv("HTransID").ToString.Trim, drv("DItemCode").ToString.Trim, "FAIL", _
+                            oDT_InvoiceStatus.Rows.Add(drv("HPOSTxNo").ToString.Trim, drv("DItemCode").ToString.Trim, "FAIL", _
                                                        "Validation Fails Pls find the line level error msg", drv("DetailsErrMsg").ToString.Trim, Now.ToShortTimeString, "", "")
                         Next
 
-                        Console.WriteLine("Validation Fails TransID " & oDT_Distinct.Rows(imjs).Item("HTransID"), sFuncName)
-                        If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Validation Fails TransID " & oDT_Distinct.Rows(imjs).Item("HTransID"), sFuncName)
+                        Console.WriteLine("Validation Fails POSTxNo " & oDT_Distinct.Rows(imjs).Item("HPOSTxNo"), sFuncName)
+                        If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Validation Fails POSTxNo " & oDT_Distinct.Rows(imjs).Item("HPOSTxNo"), sFuncName)
                     Else
                         ''''''''''--------------------------------------
                         '''''----------   Validation Succeed
                         ''''' -------------------------------------------
 
                         '' AR_InvoiceCreation 
-                        '' Console.WriteLine("Calling Function AR_InvoiceCreation() TransID " & oDT_Distinct.Rows(imjs).Item("HTransID"), sFuncName)
-                        Console.WriteLine("Validation SUCCESS TransID " & oDT_Distinct.Rows(imjs).Item("HTransID"), sFuncName)
-                        If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Validation SUCCESS TransID " & oDT_Distinct.Rows(imjs).Item("HTransID"), sFuncName)
+                        '' Console.WriteLine("Calling Function AR_InvoiceCreation() TransID " & oDT_Distinct.Rows(imjs).Item("HPOSTxNo"), sFuncName)
+                        Console.WriteLine("Validation SUCCESS POSTxNo " & oDT_Distinct.Rows(imjs).Item("HPOSTxNo"), sFuncName)
+                        If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Validation SUCCESS POSTxNo " & oDT_Distinct.Rows(imjs).Item("HPOSTxNo"), sFuncName)
                         oDT_InvoiceStatus.Clear()
                         MarketingDocuments_Sync(oDV_InvoiceInform, oDV_PaymentsInform, p_oCompany, oDT_InvoiceStatus, sErrDesc)
                     End If
@@ -292,7 +293,10 @@ Module modCommon
 
         Dim oDT_Payamount As DataTable = New DataTable
         Dim dPayamount As Double = 0
-        oDT_Payamount = oDVPayment.ToTable
+        If oDVPayment.Count > 0 Then
+            oDT_Payamount = oDVPayment.ToTable
+        End If
+
 
         Dim oRset As SAPbobsCOM.Recordset = oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset)
         Dim oRset_Batch As SAPbobsCOM.Recordset = oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.BoRecordset)
@@ -313,7 +317,7 @@ Module modCommon
             End If
 
 
-            If oDVARInvoice.Item(0).Row("HPOSTxType").ToString.Trim = "S" Then
+            If oDVARInvoice.Item(0).Row("HPOSTxType").ToString.Trim = "S" Then '' AR Invoice & Incoming payments
 
                 '************************************ AR Invoice Started ************************************************************************************
 
@@ -328,7 +332,7 @@ Module modCommon
 
                             Call WriteToLogFile(sErrDesc, sFuncName)
                             Console.WriteLine("Completed with ERROR", sFuncName)
-                            oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HTransID").ToString.Trim, "", "FAIL", sErrDesc, "", Now.ToShortTimeString, "", "")
+                            oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HPOSTxNo").ToString.Trim, "", "FAIL", sErrDesc, "", Now.ToShortTimeString, "", "")
                             Console.WriteLine("Rollback the SAP Transaction ", sFuncName)
                             If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Rollback the SAP Transaction ", sFuncName)
                             If oCompany.InTransaction = True Then oCompany.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_RollBack)
@@ -348,7 +352,7 @@ Module modCommon
                 If oDVPayment Is Nothing Then
                     Console.WriteLine("No matching records found in Payement Table " & sDocEntry, sFuncName)
                     If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("No matching records found in Payment Table : AR Invoice DocEntry " & sDocEntry, sFuncName)
-                    oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HTransID").ToString.Trim, "", "SUCCESS", "", "", Now.ToShortTimeString, sDocEntry, sDocNum)
+                    oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HPOSTxNo").ToString.Trim, "", "SUCCESS", "", "", Now.ToShortTimeString, sDocEntry, sDocNum)
                 Else
                     If oDVPayment.Count > 0 Then
                         Console.WriteLine("Calling Funcion AR_IncomingPayment() " & sDocEntry, sFuncName)
@@ -358,7 +362,6 @@ Module modCommon
 
                             Call WriteToLogFile(sErrDesc, sFuncName)
                             Console.WriteLine("Completed with ERROR", sFuncName)
-                            oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HTransID").ToString.Trim, "", "FAIL", sErrDesc, "", Now.ToShortTimeString)
                             Console.WriteLine("Rollback the SAP Transaction ", sFuncName)
                             If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Rollback the SAP Transaction ", sFuncName)
                             If oCompany.InTransaction = True Then oCompany.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_RollBack)
@@ -366,18 +369,18 @@ Module modCommon
                             ''  Return RTN_ERROR
                         Else
 
-                            oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HTransID").ToString.Trim, "", "SUCCESS", "", "", Now.ToShortTimeString, sDocEntry, sDocNum)
+                            oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HPOSTxNo").ToString.Trim, "", "SUCCESS", "", "", Now.ToShortTimeString, sDocEntry, sDocNum)
                             ''  Return RTN_ERROR
                         End If
                     Else
                         If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("No matching records found in Payement Table : AR Invoice DocEntry " & sDocEntry, sFuncName)
                         Console.WriteLine("No matching records found in Payement Table " & sDocEntry, sFuncName)
-                        oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HTransID").ToString.Trim, "", "SUCCESS", "", "", Now.ToShortTimeString, sDocEntry, sDocNum)
+                        oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HPOSTxNo").ToString.Trim, "", "SUCCESS", "", "", Now.ToShortTimeString, sDocEntry, sDocNum)
                     End If
                 End If
 
 
-            ElseIf oDVARInvoice.Item(0).Row("HPOSTxType").ToString.Trim = "V" Then
+            ElseIf oDVARInvoice.Item(0).Row("HPOSTxType").ToString.Trim = "V" Then '' Cancel Incomingpayments & create the AR Invoice cancellation
 
 
                 '************************************ Incoming Payment Cancellation Started ************************************************************************************
@@ -388,14 +391,20 @@ Module modCommon
                 If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("SAP Transaction started successfully " & sDocEntry, sFuncName)
                 If AR_IncomingPayment_Cancel(oCompany, sPOSNumber _
                                                         , sARInvoice, sErrDesc) <> RTN_SUCCESS Then
+
+                    If Left(sErrDesc, 19) = "No matching records" Then
+                        oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HPOSTxNo").ToString.Trim, "", "Skip", sErrDesc, "", Now.ToShortTimeString, "", "")
+                    Else
+                        oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HPOSTxNo").ToString.Trim, "", "FAIL", sErrDesc, "", Now.ToShortTimeString, "", "")
+                    End If
                     Call WriteToLogFile(sErrDesc, sFuncName)
                     Console.WriteLine("Completed with ERROR", sFuncName)
-                    oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HTransID").ToString.Trim, "", "FAIL", sErrDesc, "", Now.ToShortTimeString, "", "")
                     Console.WriteLine("Rollback the SAP Transaction ", sFuncName)
                     If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Rollback the SAP Transaction ", sFuncName)
                     If oCompany.InTransaction = True Then oCompany.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_RollBack)
                     MarketingDocuments_Sync = Nothing
                     GoTo ERRORDISPLAY
+
                     ''  Return RTN_ERROR
                 End If
 
@@ -405,16 +414,20 @@ Module modCommon
 
                 If AR_CreditMemo(oCompany, sARInvoice, dIncomeDate, sErrDesc) <> RTN_SUCCESS Then
 
+                    If sErrDesc = "" Then
+                        oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HPOSTxNo").ToString.Trim, "", "Skip", sErrDesc, "", Now.ToShortTimeString, "", "")
+                    Else
+                        oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HPOSTxNo").ToString.Trim, "", "FAIL", sErrDesc, "", Now.ToShortTimeString, "", "")
+                    End If
                     Call WriteToLogFile(sErrDesc, sFuncName)
                     Console.WriteLine("Completed with ERROR", sFuncName)
-                    oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HTransID").ToString.Trim, "", "FAIL", sErrDesc, "", Now.ToShortTimeString, "", "")
                     Console.WriteLine("Rollback the SAP Transaction ", sFuncName)
                     If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Rollback the SAP Transaction ", sFuncName)
                     If oCompany.InTransaction = True Then oCompany.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_RollBack)
                     MarketingDocuments_Sync = Nothing
                     ''Return RTN_ERROR
                 Else
-                    oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HTransID").ToString.Trim, "", "SUCCESS", "", "", Now.ToShortTimeString, sARInvoice, "")
+                    oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HPOSTxNo").ToString.Trim, "", "SUCCESS", "", "", Now.ToShortTimeString, sARInvoice, "")
                     ''  Return RTN_ERROR
                 End If
 
@@ -433,7 +446,7 @@ Module modCommon
 
                             Call WriteToLogFile(sErrDesc, sFuncName)
                             Console.WriteLine("Completed with ERROR", sFuncName)
-                            oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HTransID").ToString.Trim, "", "FAIL", sErrDesc, "", Now.ToShortTimeString, "", "")
+                            oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HPOSTxNo").ToString.Trim, "", "FAIL", sErrDesc, "", Now.ToShortTimeString, "", "")
                             Console.WriteLine("Rollback the SAP Transaction ", sFuncName)
                             If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Rollback the SAP Transaction ", sFuncName)
                             If oCompany.InTransaction = True Then oCompany.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_RollBack)
@@ -453,7 +466,7 @@ Module modCommon
                 If oDVPayment Is Nothing Then
                     Console.WriteLine("No matching records found in Payment Table " & sDocEntry, sFuncName)
                     If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("No matching records found in Payment Table" & sDocEntry, sFuncName)
-                    oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HTransID").ToString.Trim, "", "SUCCESS", "", "", Now.ToShortTimeString, sDocEntry, sDocNum)
+                    oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HPOSTxNo").ToString.Trim, "", "SUCCESS", "", "", Now.ToShortTimeString, sDocEntry, sDocNum)
                 Else
                     If oDVPayment.Count > 0 Then
                         Console.WriteLine("Calling Funcion Outgoing_Payment() " & sDocEntry, sFuncName)
@@ -463,26 +476,26 @@ Module modCommon
 
                             Call WriteToLogFile(sErrDesc, sFuncName)
                             Console.WriteLine("Completed with ERROR", sFuncName)
-                            oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HTransID").ToString.Trim, "", "FAIL", sErrDesc, "", Now.ToShortTimeString)
+                            oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HPOSTxNo").ToString.Trim, "", "FAIL", sErrDesc, "", Now.ToShortTimeString)
                             Console.WriteLine("Rollback the SAP Transaction ", sFuncName)
                             If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Rollback the SAP Transaction ", sFuncName)
                             If oCompany.InTransaction = True Then oCompany.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_RollBack)
                             MarketingDocuments_Sync = Nothing
                             ''  Return RTN_ERROR
                         Else
-                            oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HTransID").ToString.Trim, "", "SUCCESS", "", "", Now.ToShortTimeString, sDocEntry, sDocNum)
+                            oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HPOSTxNo").ToString.Trim, "", "SUCCESS", "", "", Now.ToShortTimeString, sDocEntry, sDocNum)
                             ''  Return RTN_ERROR
                         End If
                     Else
                         If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("No matching records found in Payement Table : AR Invoice DocEntry " & sDocEntry, sFuncName)
                         Console.WriteLine("No matching records found in Payement Table " & sDocEntry, sFuncName)
-                        oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HTransID").ToString.Trim, "", "SUCCESS", "", "", Now.ToShortTimeString, sDocEntry, sDocNum)
+                        oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HPOSTxNo").ToString.Trim, "", "SUCCESS", "", "", Now.ToShortTimeString, sDocEntry, sDocNum)
                     End If
                 End If
 
             End If
             sErrDesc = ""
-            ''  oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HTransID").ToString.Trim, "", "SUCCESS", "", "", Now.ToShortTimeString)
+            ''  oDTStatus.Rows.Add(oDVARInvoice.Item(0).Row("HPOSTxNo").ToString.Trim, "", "SUCCESS", "", "", Now.ToShortTimeString)
 
 ERRORDISPLAY: If oDTStatus Is Nothing Then
             Else
@@ -496,11 +509,11 @@ ERRORDISPLAY: If oDTStatus Is Nothing Then
                         sQueryup += "UPDATE " & p_oCompDef.p_sIntDBName & ".. [AB_SalesTransHeader]" & _
 "SET [Status] = '" & oDTStatus.Rows(imjs).Item("Status").ToString.Trim & "' ,[ErrorMsg] = '" & Replace(oDTStatus.Rows(imjs).Item("HErrorMsg").ToString.Trim, "'", "''") & "' , " & _
 "[SAPSyncDate] =  DATEADD(day,datediff(day,0,GETDATE()),0) ,[SAPSyncDateTime] = GETDATE(), [ARDocEntry] = '" & oDTStatus.Rows(imjs).Item("DocEntry").ToString.Trim & "' " & _
-"WHERE [ID] = '" & oDTStatus.Rows(imjs).Item("HID").ToString.Trim & "'"
+"WHERE [POSTxNo] = '" & oDTStatus.Rows(imjs).Item("HID").ToString.Trim & "'"
                         sTrandID = oDTStatus.Rows(imjs).Item("HID").ToString.Trim
 
                         sQueryup += "UPDATE " & p_oCompDef.p_sIntDBName & ".. [AB_SalesTransDetail] SET [ErrMsg] = '' " & _
-" WHERE [HeaderID] = '" & oDTStatus.Rows(imjs).Item("HID").ToString.Trim & "'"
+" WHERE [POSTxNo] = '" & oDTStatus.Rows(imjs).Item("HID").ToString.Trim & "'"
                     End If
 
                     If Not String.IsNullOrEmpty(oDTStatus.Rows(imjs).Item("LErrorMsg").ToString.Trim) Then
@@ -521,7 +534,7 @@ ERRORDISPLAY: If oDTStatus Is Nothing Then
             End If
 
             If oCompany.InTransaction = True Then oCompany.EndTransaction(SAPbobsCOM.BoWfTransOpt.wf_Commit)
-            Console.WriteLine("Committed the Transaction for TransID " & oDVARInvoice.Item(0).Row("HTransID").ToString.Trim, sFuncName)
+            Console.WriteLine("Committed the Transaction for TransID " & oDVARInvoice.Item(0).Row("HPOSTxNo").ToString.Trim, sFuncName)
             If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Committed the Transaction Reference POSNumber : " & sPOSNumber, sFuncName)
             ''System.Runtime.InteropServices.Marshal.ReleaseComObject(oARInvoice)
             '' If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Disconnecting the Company and Release the Object ", sFuncName)
@@ -681,9 +694,9 @@ ERRORDISPLAY: If oDTStatus Is Nothing Then
 
             sQuery = "select T0.* , T1.AcctCode , T1.CreditCard , (select top 1 RCT3.CrCardNum  from [" & p_oCompDef.p_sDataBaseName & "].. RCT3 where RCT3.CreditCard = T1.CreditCard ) [CreditNumber]  " & _
 "into #Payment from [AB_Payment] T0 left outer join [" & p_oCompDef.p_sDataBaseName & "].. OCRC T1 on T1.CardName = T0.PaymentCode " & _
-"select #Payment.HeaderID  , COUNT(isnull(#Payment.CreditCard,0 )) [CreditCardCount] into #Paycount from #Payment where isnull(#Payment.CreditCard,'') = '' group by #Payment.HeaderID " & _
+"select #Payment.POSTxNo  , COUNT(isnull(#Payment.CreditCard,0 )) [CreditCardCount] into #Paycount from #Payment where isnull(#Payment.CreditCard,'') = '' group by #Payment.POSTxNo " & _
 "select T0.*, isnull(T1.CreditCardCount,'') [CreditCardCount] " & _
- "into #PaymentFinal from #Payment T0 left outer join #Paycount T1 on T0.HeaderID  = T1.HeaderID " & _
+ "into #PaymentFinal from #Payment T0 left outer join #Paycount T1 on T0.POSTxNo  = T1.POSTxNo " & _
  "select T4.*, case when isnull(T4.CreditCard,'') = '' then 'Payment Code {' + T4.PaymentCode  + '} does not exist in Credit Cards Setup' else '' end [ErrMsg]  from #PaymentFinal T4 " & _
 "drop table #Payment " & _
 "drop table #Paycount " & _

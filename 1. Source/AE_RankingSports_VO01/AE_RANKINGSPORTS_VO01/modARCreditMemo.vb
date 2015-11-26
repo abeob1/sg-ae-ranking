@@ -51,10 +51,18 @@
                     If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Completed with ERROR", sFuncName)
                     AR_CreditMemo = RTN_ERROR
                 Else
+                    sErrDesc = String.Empty
                     Console.WriteLine("Completed with SUCCESS", sFuncName)
                     If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Completed with SUCCESS.", sFuncName)
                     AR_CreditMemo = RTN_SUCCESS
                 End If
+
+            Else
+                sErrDesc = "No matching records found in the AR Invoice " & sDocEntry
+                Call WriteToLogFile(sErrDesc, sFuncName)
+                If p_iDebugMode = DEBUG_ON Then Call WriteToLogFile_Debug("Completed with ERROR", sFuncName)
+                AR_CreditMemo = RTN_ERROR
+
             End If
         Catch ex As Exception
             sErrDesc = ex.Message
