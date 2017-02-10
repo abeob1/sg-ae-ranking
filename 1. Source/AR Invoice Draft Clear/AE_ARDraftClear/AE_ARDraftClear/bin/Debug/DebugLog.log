@@ -1,0 +1,15 @@
+[12/07/2016 15:06:06][                        Main()] Starting function
+[12/07/2016 15:06:06][                        Main()] Calling GetSystemIntializeInfo()
+[12/07/2016 15:06:06][      GetSystemIntializeInfo()] Starting Function
+[12/07/2016 15:06:06][      GetSystemIntializeInfo()] Completed with SUCCESS
+[12/07/2016 15:06:06][                        Main()] Calling ConnectToTargetCompany()
+[12/07/2016 15:06:06][      ConnectToTargetCompany()] Starting function
+[12/07/2016 15:06:06][      ConnectToTargetCompany()] Initializing the Company Object
+[12/07/2016 15:06:06][      ConnectToTargetCompany()] Assigning the representing database name
+[12/07/2016 15:06:06][      ConnectToTargetCompany()] Connecting to the Company Database.
+[12/07/2016 15:06:10][      ConnectToTargetCompany()] Completed with SUCCESS
+[12/07/2016 15:06:10][            ConvertRecordset()] Starting function
+[12/07/2016 15:06:10][            ConvertRecordset()] Completed with SUCCESS
+[12/07/2016 15:06:10][                        Main()] Starting to Remove AR Invoice Draft 
+[12/07/2016 15:06:10][                        Main()] Starting to Remove AR Invoice Draft Completed Successfully
+[12/07/2016 15:06:10][                        Main()] Completed with SUCCESS
